@@ -1,0 +1,3 @@
+2024/09/14 17:14:11.821769 INFO - server.go:39 server start listen
+2024/09/14 17:14:29.782705 INFO - server.go:52 server shutting down
+2024/09/14 17:14:29.782810 INFO - echo.go:69 handler shutting down
