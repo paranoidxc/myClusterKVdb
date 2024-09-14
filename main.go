@@ -29,10 +29,12 @@ func main() {
 	})
 	logger.SetDebugMode(true)
 
-	if fileExists(configFile) {
-		//config.SetupConfig(configFile)
-	} else {
-	}
+	/*
+		if fileExists(configFile) {
+			config.SetupConfig(configFile)
+		} else {
+		}
+	*/
 	config.Properties = defaultProperties
 
 	err := tcp.ListenAndServeWithSignal(&tcp.Config{
