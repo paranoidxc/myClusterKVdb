@@ -1,6 +1,7 @@
 package database
 
 import (
+	"myredis/aof"
 	"myredis/config"
 	"myredis/interface/resp"
 	"myredis/lib/logger"
@@ -10,7 +11,8 @@ import (
 )
 
 type Database struct {
-	dbSet []*DB
+	dbSet      []*DB
+	aofHandler *aof.AofHandler
 }
 
 func NewDatabase() *Database {
@@ -24,6 +26,21 @@ func NewDatabase() *Database {
 		db.index = i
 		database.dbSet[i] = db
 	}
+
+	if config.Properties.AppendOnly {
+		aofHandler, err := aof.NewAofHandler(database)
+		if err != nil {
+			panic(err)
+		}
+		database.aofHandler = aofHandler
+		for _, db := range database.dbSet {
+			sdb := db
+			db.addAof = func(line CmdLine) {
+				database.aofHandler.AddAof(sdb.index, line)
+			}
+		}
+	}
+
 	return database
 }
 

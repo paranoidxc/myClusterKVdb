@@ -9,8 +9,9 @@ import (
 )
 
 type DB struct {
-	index int
-	data  dict.Dict
+	index  int
+	data   dict.Dict
+	addAof func(CmdLine)
 }
 
 // 所有 redis 指令(get,set ...)给一个实现
@@ -24,6 +25,8 @@ type CmdLine = [][]byte
 func makeDB() *DB {
 	db := &DB{
 		data: dict.MakeSyncDict(),
+		//给个空的实现 在启动的时候用
+		addAof: func(line CmdLine) {},
 	}
 
 	return db

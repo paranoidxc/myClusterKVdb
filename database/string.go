@@ -3,6 +3,7 @@ package database
 import (
 	"myredis/interface/database"
 	"myredis/interface/resp"
+	"myredis/lib/utils"
 	"myredis/resp/reply"
 )
 
@@ -26,6 +27,7 @@ func execSet(db *DB, args [][]byte) resp.Reply {
 		Data: value,
 	}
 	db.PutEntity(key, entity)
+	db.addAof(utils.ToCmdLine2("set", args...))
 	return reply.MakeOkReply()
 }
 
@@ -37,6 +39,7 @@ func execSetnx(db *DB, args [][]byte) resp.Reply {
 		Data: value,
 	}
 	result := db.PutIfAbsent(key, entity)
+	db.addAof(utils.ToCmdLine2("setnx", args...))
 	return reply.MakeIntReply(int64(result))
 }
 
@@ -49,6 +52,7 @@ func execGetSet(db *DB, args [][]byte) resp.Reply {
 	db.PutEntity(key, &database.DataEntity{
 		Data: value,
 	})
+	db.addAof(utils.ToCmdLine2("getset", args...))
 	if !exists {
 		return reply.MakeNullBulkReply()
 	}
