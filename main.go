@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"myredis/config"
 	"myredis/lib/logger"
+	"myredis/resp/handler"
 	"myredis/tcp"
 	"os"
 )
@@ -29,17 +30,21 @@ func main() {
 	})
 	logger.SetDebugMode(true)
 
+	if fileExists(configFile) {
+		config.SetupConfig(configFile)
+	} else {
+		config.Properties = defaultProperties
+	}
+
 	/*
-		if fileExists(configFile) {
-			config.SetupConfig(configFile)
-		} else {
-		}
+		err := tcp.ListenAndServeWithSignal(&tcp.Config{
+			Address: fmt.Sprintf("%s:%d", config.Properties.Bind, config.Properties.Port),
+		}, tcp.MakeHandler())
 	*/
-	config.Properties = defaultProperties
 
 	err := tcp.ListenAndServeWithSignal(&tcp.Config{
 		Address: fmt.Sprintf("%s:%d", config.Properties.Bind, config.Properties.Port),
-	}, tcp.MakeHandler())
+	}, handler.MakeHandler())
 
 	if err != nil {
 		fmt.Println(err)
