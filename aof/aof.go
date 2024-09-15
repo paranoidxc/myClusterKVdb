@@ -1,10 +1,13 @@
 package aof
 
 import (
+	"io"
 	"myredis/config"
 	"myredis/interface/database"
 	"myredis/lib/logger"
 	"myredis/lib/utils"
+	"myredis/resp/connection"
+	"myredis/resp/parser"
 	"myredis/resp/reply"
 	"os"
 	"strconv"
@@ -33,6 +36,7 @@ func NewAofHandler(database database.Database) (*AofHandler, error) {
 	handler.aofFilename = config.Properties.AppendFilename
 	handler.database = database
 	handler.LoadAof()
+	logger.Info("loadAof File done")
 
 	aofFile, err := os.OpenFile(handler.aofFilename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0664)
 	if err != nil {
@@ -86,5 +90,38 @@ func (handler *AofHandler) handleAof() {
 // LoadAof
 // 从磁盘文件读到内存中
 func (handler *AofHandler) LoadAof() {
+	file, err := os.Open(handler.aofFilename)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	defer file.Close()
 
+	ch := parser.ParseStream(file)
+	fakeConn := &connection.Connection{}
+	for p := range ch {
+		if p.Err != nil {
+			if p.Err == io.EOF {
+				break
+			}
+			logger.Error(err)
+			continue
+		}
+
+		if p.Data == nil {
+			logger.Error("empty payload")
+			continue
+		}
+
+		r, ok := p.Data.(*reply.MultiBulkReply)
+		if !ok {
+			logger.Error("need multi bulk")
+			continue
+		}
+
+		rep := handler.database.Exec(fakeConn, r.Args)
+		if reply.IsErrorReply(rep) {
+			logger.Error(rep)
+		}
+	}
 }
