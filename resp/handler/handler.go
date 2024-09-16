@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	"io"
+	"myredis/cluster"
+	"myredis/config"
 	database2 "myredis/database"
 	"myredis/interface/database"
 	"myredis/lib/logger"
@@ -27,7 +29,14 @@ type RespHandler struct {
 
 func MakeHandler() *RespHandler {
 	var db database.Database
-	db = database2.NewStandaloneDatabase()
+	logger.Info("self", config.Properties.Self)
+	logger.Info("peer", config.Properties.Peers)
+	if config.Properties.Self != "" && len(config.Properties.Peers) > 0 {
+		// 集群版本
+		db = cluster.MakeClusterDatabase()
+	} else {
+		db = database2.NewStandaloneDatabase()
+	}
 	return &RespHandler{
 		db: db,
 	}

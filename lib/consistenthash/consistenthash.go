@@ -56,5 +56,5 @@ func (m *NodeMap) PickNode(key string) string {
 		idx = 0
 	}
 
-	return m.nodeHashMap[idx]
+	return m.nodeHashMap[m.nodeHashs[idx]]
 }

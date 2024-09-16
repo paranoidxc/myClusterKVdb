@@ -95,12 +95,13 @@ func (r *IntReply) ToBytes() []byte {
 
 /* ---- Int Reply end ---- */
 
-type Error interface {
+/* ---- Error Reply start ---- */
+// ErrorReply is an error and redis.Reply
+type ErrorReply interface {
 	Error() string
 	ToBytes() []byte
 }
 
-/* ---- Error Reply start ---- */
 type StandardErrReply struct {
 	Status string
 }

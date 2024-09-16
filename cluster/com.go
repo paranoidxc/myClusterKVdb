@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"myredis/interface/resp"
+	"myredis/lib/logger"
 	"myredis/lib/utils"
 	"myredis/resp/client"
 	"myredis/resp/reply"
@@ -13,7 +14,9 @@ import (
 func (cluster *ClusterDatabase) getPeerClient(peer string) (*client.Client, error) {
 	factory, ok := cluster.peerConnection[peer]
 	if !ok {
-		return nil, errors.New("connection not found")
+		logger.Info("cluster peerConnection", cluster.peerConnection)
+		logger.Info("peer", peer)
+		return nil, errors.New("getPeerClient connection not found")
 	}
 
 	object, err := factory.BorrowObject(context.Background())
@@ -54,7 +57,7 @@ func (cluster *ClusterDatabase) relay(peer string, c resp.Connection, args [][]b
 	return peerClient.Send(args)
 }
 
-func (cluster *ClusterDatabase) broadcase(c resp.Connection, args [][]byte) map[string]resp.Reply {
+func (cluster *ClusterDatabase) broadcast(c resp.Connection, args [][]byte) map[string]resp.Reply {
 	results := make(map[string]resp.Reply)
 
 	for _, node := range cluster.nodes {
