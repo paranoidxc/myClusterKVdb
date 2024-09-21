@@ -12,6 +12,7 @@ func init() {
 	RegisterCommand("DEL", execDel, -2)
 	RegisterCommand("Exists", execExists, -2)
 	RegisterCommand("FlushDB", execFlushDB, 1)
+	RegisterCommand("FlushDBABC", execFlushDB, 1)
 	RegisterCommand("Type", execType, 2)
 	RegisterCommand("Rename", execRename, 3)
 	RegisterCommand("Renamenx", execRenamenx, 3)

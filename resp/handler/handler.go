@@ -31,6 +31,8 @@ func MakeHandler() *RespHandler {
 	var db database.Database
 	logger.Info("self", config.Properties.Self)
 	logger.Info("peer", config.Properties.Peers)
+	logger.Info("lead", config.Properties.Lead)
+	logger.Info("Clusters", config.Properties.Clusters)
 	if config.Properties.Self != "" && len(config.Properties.Peers) > 0 {
 		// 集群版本
 		db = cluster.MakeClusterDatabase()
