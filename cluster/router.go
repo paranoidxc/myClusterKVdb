@@ -18,8 +18,8 @@ func makeRouter() map[string]CmdFunc {
 	routerMap["flushdb"] = flushdb
 	routerMap["flushdbabc"] = flushdb
 	//routerMap["flushdb"] = defaultFunc
-	//routerMap["del"] = del
-	routerMap["del"] = defaultFunc
+	routerMap["del"] = del
+	//routerMap["del"] = defaultFunc
 	routerMap["select"] = execSelect
 
 	return routerMap
